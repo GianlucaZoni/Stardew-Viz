@@ -1,7 +1,9 @@
 /* import { useEffect, useState } from "react" */
+import { useEffect } from "react"
 import "./App.css"
 /* import { csv } from "d3" */
 import { TableView } from "./data/TableView"
+import { fetchFishGoldPrice } from "./utils/api"
 
 function App() {
   /* const filePath = "src/data/fish_detail.csv"
@@ -15,6 +17,10 @@ function App() {
 
     getData(filePath)
   }, []) */
+
+  useEffect(() => {
+    fetchFishGoldPrice().then((res) => console.log(res))
+  }, [])
 
   return (
     <>

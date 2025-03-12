@@ -27,17 +27,17 @@ export function TableView({ tableTitle, filePath }: TableViewProps) {
       <table>
         <thead>
           <tr>
-            {data?.columns.map((d, i) => {
-              return <th key={i}>{d}</th>
+            {data?.columns.map((col) => {
+              return <th key={col}>{col}</th>
             })}
           </tr>
         </thead>
         <tbody>
-          {data?.map((d, i) => {
+          {data?.map((row, index) => {
             return (
-              <tr key={i}>
-                {data?.columns.map((c, i) => {
-                  return <td key={i}>{d[c]}</td>
+              <tr key={index}>
+                {data?.columns.map((col) => {
+                  return <td key={col}>{row[col]}</td>
                 })}
               </tr>
             )
