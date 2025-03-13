@@ -7,7 +7,7 @@ function App() {
     <>
       <h1>Stardew Valley dataviz</h1>
 
-      <PriceAnalysisBarChart />
+      <PriceAnalysisBarChart fishSelected="Pufferfish" />
       <BarChart />
 
       {/* <TableView tableTitle="Fishes Wiki" filePath="src/data/fish_detail.csv" />
