@@ -7,7 +7,6 @@ interface TableViewProps {
 }
 
 export function TableView({ tableTitle, filePath }: TableViewProps) {
-  /* const filePath = "src/data/fish_detail.csv" */
   const [data, setData] = useState<d3.DSVRowArray | null>()
 
   useEffect(() => {

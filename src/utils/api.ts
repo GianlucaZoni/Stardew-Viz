@@ -9,15 +9,13 @@ export interface FishGoldPriceData {
 export async function fetchFishGoldPrice(): Promise<FishGoldPriceData[]> {
     const rawData = await csv("/fish_price_breakdown.csv")
 
-    const initial = rawData.flatMap((row) => {
+    const cleanData = rawData.flatMap((row) => {
         const { Name, ...rest } = row
         const entries = Object.entries(rest)
-        //const newArray = entries.map((entry) => ({ fishName: entry[0], goldPrice: entry[1] }))
+        const cleanEntries = entries.map(([fishName, goldPrice]) => ({ name: Name, fishName, goldPrice: parseInt(goldPrice) }))
 
-        const newNewArray = entries.map(([fishName, goldPrice]) => ({ name: Name, fishName, goldPrice: parseInt(goldPrice) }))
-
-        return newNewArray
+        return cleanEntries
     })
 
-    return initial
+    return cleanData
 }
