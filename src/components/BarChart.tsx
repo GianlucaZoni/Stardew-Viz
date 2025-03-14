@@ -8,7 +8,7 @@ export function BarChart() {
 
   useEffect(() => {
     fetchFishGoldPrice().then((res) => {
-      console.table(res)
+      //console.table(res)
       setData(res)
     })
   }, [])

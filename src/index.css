@@ -14,7 +14,7 @@
 }
 
 body {
-  margin: 0;
+  margin: 64;
   display: flex;
   place-items: center;
   align-items: center;
