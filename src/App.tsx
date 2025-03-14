@@ -1,5 +1,6 @@
 import "./App.css"
 import { BarChart } from "./components/BarChart"
+import { LineChart } from "./components/LineChart"
 import { PriceAnalysisBarChart } from "./components/PriceAnalysisBarChart"
 
 function App() {
@@ -7,7 +8,9 @@ function App() {
     <>
       <h1>Stardew Valley dataviz</h1>
 
-      <PriceAnalysisBarChart fishSelected="Lionfish" />
+      <LineChart />
+
+      <PriceAnalysisBarChart />
       <BarChart />
 
       {/* <TableView tableTitle="Fishes Wiki" filePath="src/data/fish_detail.csv" />

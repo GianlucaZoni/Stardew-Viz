@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react"
 import { fetchFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import * as d3 from "d3"
-
-interface GraphSetup {
-  width: number
-  height: number
-  margin: { top: number; right: number; bottom: number; left: number }
-}
+import { makeLayout } from "yogurt-layout"
+import { DebugLayout } from "./DebugLayout"
+import { useControls } from "leva"
 
 export function PriceAnalysisBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -15,45 +12,59 @@ export function PriceAnalysisBarChart() {
   useEffect(() => {
     fetchFishGoldPrice().then((res) => {
       setData(res)
-      //console.table(res.filter((d) => d.fishName === "Lave Eel"))
     })
   }, [])
 
   const filteredData = data.filter((d) => d.fishName === selectedFish)
-  console.table(filteredData)
-
-  // explore more this type
-  // React.ChangeEvent<HTMLSelectElement>
-  // { target: { value: SetStateAction<string> } }
+  //console.table(filteredData)
 
   const handleFishChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedFish(e.target.value)
   }
+  const { isDebug, paddingTop, xLabelsHeight, xLabelsAngle } = useControls({
+    isDebug: true,
+    paddingTop: { value: 16, min: 0, max: 128, step: 1 },
+    xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
+    xLabelsAngle: { value: -30, min: -90, max: 90, step: 1 },
+  })
 
-  const graphSetup: GraphSetup = {
-    margin: { top: 16, right: 32, bottom: 128, left: 64 },
+  const layout = makeLayout({
+    id: "root",
+    direction: "row",
     width: 800,
     height: 600,
-  }
+    // padding: [16, 32, 128, 64],
+    padding: {
+      top: paddingTop,
+      right: 32,
+    },
+    children: [
+      { id: "yLabels", width: 64 },
+      {
+        id: "chart-wrapper",
+
+        direction: "column",
+        children: [{ id: "chart" }, { id: "xLabels", height: xLabelsHeight }],
+      },
+    ],
+  })
 
   const xScale = d3
     .scaleBand()
     .domain(filteredData.map((d) => d.name))
-    .range([graphSetup.margin.left, graphSetup.width - graphSetup.margin.right])
+    .range([layout.chart.left, layout.chart.right])
     .padding(0.2)
 
   const yScale = d3
     .scaleLinear()
     //.domain([0, 1000])
     .domain([0, d3.max(data, (d) => d.goldPrice) || 0])
-    .range([graphSetup.height - graphSetup.margin.bottom, graphSetup.margin.top])
+    .range([layout.chart.bottom, layout.chart.top])
     .nice()
 
-  console.log(yScale.domain())
+  //console.log(yScale.domain())
 
-  //const xTicks = xScale.ticks()
-  const yTicks50 = yScale.ticks(20)
-  const yTicks100 = yScale.ticks(10)
+  const yTicks = yScale.ticks(20)
 
   return (
     <div>
@@ -61,15 +72,13 @@ export function PriceAnalysisBarChart() {
       <h3>{selectedFish} price analysis</h3>
       <label htmlFor="fishSelect">Select Fish:</label>
       <select name="fishes" id="fishSelect" value={selectedFish} onChange={handleFishChange}>
-        {data
-          .map((d) => d.fishName)
-          .map((fish, index) => (
-            <option key={index} value={fish}>
-              {fish}
-            </option>
-          ))}
+        {data.map(({ fishName }, index) => (
+          <option key={index} value={fishName}>
+            {fishName}
+          </option>
+        ))}
       </select>
-      <svg width={graphSetup.width} height={graphSetup.height} style={{ border: "1px solid red" }}>
+      <svg width={layout.root.width} height={layout.root.height}>
         {filteredData.map((d, i) => (
           <g key={i}>
             <line
@@ -80,52 +89,36 @@ export function PriceAnalysisBarChart() {
               stroke="grey"
               strokeWidth={1}
             />
+          </g>
+        ))}
+
+        {xScale.domain().map((d, i) => (
+          <g key={i}>
             <text
-              x={(xScale(d.name) ?? 0) + xScale.bandwidth()}
-              y={yScale.range()[0] + 40}
+              x={(xScale(d) ?? 0) + xScale.bandwidth()}
+              y={layout.xLabels.top + 40}
               textAnchor="end"
-              transform={`rotate(-30, ${(xScale(d.name) || 0) + xScale.bandwidth() / 2}, ${
-                yScale.range()[0] + 32
+              transform={`rotate(${xLabelsAngle}, ${(xScale(d) || 0) + xScale.bandwidth() / 2}, ${
+                layout.xLabels.top + 32
               })`}
             >
-              {d.name}
+              {d}
             </text>
           </g>
         ))}
-        {yTicks100.map((d, i) => (
+
+        {yTicks.map((d, i) => (
           <line
             key={i}
             x1={xScale.range()[0]}
             x2={xScale.range()[1]}
             y1={yScale(d)}
             y2={yScale(d)}
-            stroke="grey"
+            stroke={d % 500 === 0 ? "grey" : "lightgrey"}
             strokeWidth={1}
           />
         ))}
-        {yTicks100.map((d, i) => (
-          <text
-            key={i}
-            x={xScale.range()[0] - 16}
-            y={yScale(d)}
-            textAnchor="end"
-            dominantBaseline="middle"
-          >
-            {d}
-          </text>
-        ))}
-        {yTicks50.map((d, i) => (
-          <line
-            key={i}
-            x1={xScale.range()[0]}
-            x2={xScale.range()[1]}
-            y1={yScale(d)}
-            y2={yScale(d)}
-            stroke="lightgrey"
-            strokeWidth={1}
-          />
-        ))}
-        {yTicks50.map((d, i) => (
+        {yTicks.map((d, i) => (
           <text
             key={i}
             x={xScale.range()[0] - 16}
@@ -150,6 +143,7 @@ export function PriceAnalysisBarChart() {
             stroke="black"
           />
         ))}
+        {isDebug && <DebugLayout layout={layout} />}
       </svg>
     </div>
   )
