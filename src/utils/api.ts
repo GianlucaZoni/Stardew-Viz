@@ -12,7 +12,7 @@ export async function fetchFishGoldPrice(): Promise<FishGoldPriceData[]> {
     const cleanData = rawData.flatMap((row) => {
         const { Name, ...rest } = row
         const entries = Object.entries(rest)
-        const cleanEntries = entries.map(([fishName, goldPrice]) => ({ name: Name, fishName, goldPrice: parseInt(goldPrice) }))
+        const cleanEntries = entries.map(([fishName, goldPrice]) => ({ name: Name, fishName, goldPrice: parseInt(goldPrice.replace(/,/, '')) }))
 
         return cleanEntries
     })

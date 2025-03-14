@@ -15,12 +15,16 @@ export function PriceAnalysisBarChart() {
   useEffect(() => {
     fetchFishGoldPrice().then((res) => {
       setData(res)
-      //console.table(res.filter((d) => d.fishName === fishSelected))
+      //console.table(res.filter((d) => d.fishName === "Lave Eel"))
     })
   }, [])
 
   const filteredData = data.filter((d) => d.fishName === selectedFish)
-  //console.table(filteredData)
+  console.table(filteredData)
+
+  // explore more this type
+  // React.ChangeEvent<HTMLSelectElement>
+  // { target: { value: SetStateAction<string> } }
 
   const handleFishChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedFish(e.target.value)
@@ -99,8 +103,14 @@ export function PriceAnalysisBarChart() {
             strokeWidth={1}
           />
         ))}
-        {yTicks100.map((d) => (
-          <text x={xScale.range()[0] - 16} y={yScale(d)} textAnchor="end" dominantBaseline="middle">
+        {yTicks100.map((d, i) => (
+          <text
+            key={i}
+            x={xScale.range()[0] - 16}
+            y={yScale(d)}
+            textAnchor="end"
+            dominantBaseline="middle"
+          >
             {d}
           </text>
         ))}
@@ -115,8 +125,9 @@ export function PriceAnalysisBarChart() {
             strokeWidth={1}
           />
         ))}
-        {yTicks50.map((d) => (
+        {yTicks50.map((d, i) => (
           <text
+            key={i}
             x={xScale.range()[0] - 16}
             y={yScale(d)}
             textAnchor="end"
