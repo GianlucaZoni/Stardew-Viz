@@ -8,6 +8,16 @@ import styles from "./MultiLineChart.module.css"
 
 export function MultiLineChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
+
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean
+    x: number
+    y: number
+    fishName: string
+    name: string
+    goldPrice: number
+  } | null>(null)
+
   useEffect(() => {
     fetchFishGoldPrice().then((res) => setData(res))
   }, [])
@@ -134,11 +144,54 @@ export function MultiLineChart() {
                     fill={colorScale(fishName)}
                     stroke="white"
                     strokeWidth={1}
+                    onMouseEnter={() => {
+                      setTooltip({
+                        visible: true,
+                        x: (xScale(d.name) ?? 0) + xScale.bandwidth() / 2,
+                        y: yScale(d.goldPrice),
+                        fishName,
+                        name: d.name,
+                        goldPrice: d.goldPrice,
+                      })
+                    }}
+                    onMouseLeave={() => {
+                      setTooltip(null)
+                    }}
+                    style={{ cursor: "pointer" }}
                   />
                 ))}
               </g>
             )
           })}
+
+          {tooltip && tooltip.visible && (
+            <g
+              className={styles.tooltip}
+              transform={`translate(${tooltip.x + 10}, ${tooltip.y - 10})`}
+            >
+              <rect
+                x={0}
+                y={0}
+                width={210}
+                height={75}
+                rx={5}
+                ry={5}
+                fill="white"
+                stroke="#ccc"
+                strokeWidth={1}
+                opacity={0.9}
+              />
+              <text x={10} y={20} fontWeight="bold">
+                {tooltip.fishName}
+              </text>
+              <text x={10} y={40}>
+                {tooltip.name}
+              </text>
+              <text x={10} y={60}>
+                Price: {tooltip.goldPrice} gold
+              </text>
+            </g>
+          )}
 
           {isDebug && <DebugLayout layout={layout} />}
         </svg>
