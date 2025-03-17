@@ -36,7 +36,7 @@ export function BarChart() {
     // Scale X and Y
     const x = d3
       .scaleBand()
-      .domain(data.map((d) => d.name))
+      .domain(data.map((d) => d.fishName))
       .range([0, width])
       .padding(0.2)
 
@@ -79,7 +79,7 @@ export function BarChart() {
       .data(data)
       .join("rect")
       .attr("class", "bar")
-      .attr("x", (d) => x(d.name) || 0)
+      .attr("x", (d) => x(d.fishName) || 0)
       .attr("y", (d) => y(d.goldPrice))
       .attr("width", x.bandwidth())
       .attr("height", (d) => height - y(d.goldPrice))
@@ -94,7 +94,8 @@ export function BarChart() {
 
   return (
     <div>
-      <h2>Fish Gold Prices</h2>
+      <h2>All Fish Gold Prices</h2>
+      <h3>Imperative D3 Renderer</h3>
       <svg ref={svgRef}></svg>
     </div>
   )

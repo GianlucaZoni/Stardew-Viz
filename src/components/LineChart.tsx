@@ -97,7 +97,7 @@ export function LineChart() {
           return (
             <>
               <path
-                key={fishName}
+                key={`path-${fishName}`}
                 d={lineGenerator(fishData) ?? ""}
                 fill="none"
                 stroke={colorScale(fishName)}

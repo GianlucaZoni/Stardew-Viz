@@ -19,3 +19,21 @@ export async function fetchFishGoldPrice(): Promise<FishGoldPriceData[]> {
 
     return cleanData
 }
+
+export async function fetchLegendaryFishGoldPrice(): Promise<FishGoldPriceData[]> {
+    const rawData = await csv("/legendary_fish_price_breakdown.csv")
+
+    const cleanData = rawData.flatMap((row) => {
+        const { Name, ...rest } = row
+        const entries = Object.entries(rest)
+        const cleanEntries = entries.map(([fishName, goldPrice]) => ({
+            name: Name,
+            fishName,
+            goldPrice: parseInt(goldPrice.replace(/,/, ''))
+        }))
+
+        return cleanEntries
+    })
+
+    return cleanData
+}

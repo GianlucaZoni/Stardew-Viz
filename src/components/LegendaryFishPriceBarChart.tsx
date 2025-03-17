@@ -1,36 +1,29 @@
-import { useEffect, useState } from "react"
-import { fetchFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import * as d3 from "d3"
-import { makeLayout } from "yogurt-layout"
-import { DebugLayout } from "./DebugLayout"
+import { useEffect, useState } from "react"
+import { fetchLegendaryFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import { useControls } from "leva"
+import { DebugLayout } from "./DebugLayout"
+import { makeLayout } from "yogurt-layout"
 
-export function PriceAnalysisBarChart() {
+export function LegendaryFishPriceBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
-  const [selectedFish, setSelectedFish] = useState("Anchovy")
+  const [selectedFish, setSelectedFish] = useState("Angler")
 
   useEffect(() => {
-    fetchFishGoldPrice().then((res) => {
+    fetchLegendaryFishGoldPrice().then((res) => {
       setData(res)
+      console.table(res)
     })
   }, [])
 
   const filteredData = data.filter((d) => d.fishName === selectedFish)
-  //console.table(filteredData)
 
   const handleFishChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedFish(e.target.value)
   }
-  /* const { isDebug, paddingTop, xLabelsHeight, xLabelsAngle } = useControls({
-    isDebug: true,
-    paddingTop: { value: 16, min: 0, max: 128, step: 1 },
-    xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
-    xLabelsAngle: { value: -30, min: -90, max: 90, step: 1 },
-  }) */
 
-  const { isDebug, paddingTop, xLabelsHeight } = useControls({
+  const { isDebug, xLabelsHeight } = useControls({
     isDebug: true,
-    paddingTop: { value: 16, min: 0, max: 128, step: 1 },
     xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
   })
 
@@ -41,7 +34,7 @@ export function PriceAnalysisBarChart() {
     height: 600,
     // padding: [16, 32, 128, 64],
     padding: {
-      top: paddingTop,
+      top: 32,
       right: 32,
     },
     children: [
@@ -68,39 +61,29 @@ export function PriceAnalysisBarChart() {
     .range([layout.chart.bottom, layout.chart.top])
     .nice()
 
-  //console.log(yScale.domain())
-
   const yTicks = yScale.ticks(20)
 
-  // make it work with Pitagora, usa angolo tra ipotenula label e altezza
   const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
-
-  /* const calculateXLabelsAngle = () => {
-     if (xLabelsHeight > 232) return -90
-    else if (xLabelsHeight < 78) return 0
-    else {
-      const ratio = (xLabelsHeight - (46 + 32)) / (232 - (46 + 32))
-      return -(ratio * 90) 
-    return xLabelAngleScale
-      
-    }
-  } */
-
-  //const xLabelsAngle = calculateXLabelsAngle()
   const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
-    <div>
-      <h2>Fish Gold Prices</h2>
+    <>
+      <h2>Legendary Fishes Price Breakdown</h2>
       <h3>{selectedFish} price analysis</h3>
-      <label htmlFor="fishSelect">Select Fish:</label>
-      <select name="fishes" id="fishSelect" value={selectedFish} onChange={handleFishChange}>
+      <label htmlFor="legendaryFishSelect">Select Legendary Fish:</label>
+      <select
+        name="fishes"
+        id="legendaryFishSelect"
+        value={selectedFish}
+        onChange={handleFishChange}
+      >
         {Array.from(new Set(data.map((item) => item.fishName))).map((fishName, index) => (
           <option key={index} value={fishName}>
             {fishName}
           </option>
         ))}
       </select>
+
       <svg width={layout.root.width} height={layout.root.height}>
         {filteredData.map((d, i) => (
           <g key={i}>
@@ -169,6 +152,6 @@ export function PriceAnalysisBarChart() {
         ))}
         {isDebug && <DebugLayout layout={layout} />}
       </svg>
-    </div>
+    </>
   )
 }
