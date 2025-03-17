@@ -21,11 +21,17 @@ export function PriceAnalysisBarChart() {
   const handleFishChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedFish(e.target.value)
   }
-  const { isDebug, paddingTop, xLabelsHeight, xLabelsAngle } = useControls({
+  /* const { isDebug, paddingTop, xLabelsHeight, xLabelsAngle } = useControls({
     isDebug: true,
     paddingTop: { value: 16, min: 0, max: 128, step: 1 },
     xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
     xLabelsAngle: { value: -30, min: -90, max: 90, step: 1 },
+  }) */
+
+  const { isDebug, paddingTop, xLabelsHeight } = useControls({
+    isDebug: true,
+    paddingTop: { value: 16, min: 0, max: 128, step: 1 },
+    xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
   })
 
   const layout = makeLayout({
@@ -65,6 +71,17 @@ export function PriceAnalysisBarChart() {
   //console.log(yScale.domain())
 
   const yTicks = yScale.ticks(20)
+
+  const calculateXLabelsAngle = () => {
+    if (xLabelsHeight > 232) return -90
+    else if (xLabelsHeight < 78) return 0
+    else {
+      const ratio = (xLabelsHeight - (46 + 32)) / (232 - (46 + 32))
+      return -(ratio * 90)
+    }
+  }
+
+  const xLabelsAngle = calculateXLabelsAngle()
 
   return (
     <div>

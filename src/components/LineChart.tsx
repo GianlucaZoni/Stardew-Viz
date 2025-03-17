@@ -48,11 +48,6 @@ export function LineChart() {
     .range([layout.chart.left, layout.chart.right])
     .padding(0.2)
 
-  /* const xScale = d3
-    .scaleLinear()
-    .domain([0,filteredData.length-1])
-    .range([layout.chart.left, layout.chart.right]) */
-
   const yScale = d3
     .scaleLinear()
     .domain([0, d3.max(data, (d) => d.goldPrice) || 0])
@@ -69,39 +64,10 @@ export function LineChart() {
 
   const yTicks = yScale.ticks(20)
 
-  //console.log(xScale.domain())
-  //console.log(data.filter((d) => d.fishName).length - 1)
-
   return (
     <>
       <h2>MultiLine Fish Price Analysis</h2>
       <svg width={layout.root.width} height={layout.root.height}>
-        {/* {filteredData.map((d, i) => (
-          <g key={i}>
-            <line
-              x1={xScale(d.name) ?? 0}
-              x2={xScale(d.name) ?? 0}
-              y1={yScale.range()[0]}
-              y2={yScale.range()[0] + 8}
-              stroke="grey"
-              strokeWidth={1}
-            />
-          </g>
-        ))}
-
-        {xScale.domain().map((d, i) => (
-          <g key={i}>
-            <text
-              x={xScale(d) ?? 0}
-              y={layout.xLabels.top + 40}
-              textAnchor="end"
-              transform={`rotate(-30, ${xScale(d) || 0}, ${layout.xLabels.top + 32})`}
-            >
-              {d}
-            </text>
-          </g>
-        ))} */}
-
         {yTicks.map((d, i) => (
           <line
             key={i}
@@ -129,13 +95,26 @@ export function LineChart() {
         {Array.from(groupByFish).map(([fishName, fishData]) => {
           console.log(fishData)
           return (
-            <path
-              key={fishName}
-              d={lineGenerator(fishData) ?? ""}
-              fill="none"
-              stroke={colorScale(fishName)}
-              strokeWidth={1.5}
-            />
+            <>
+              <path
+                key={fishName}
+                d={lineGenerator(fishData) ?? ""}
+                fill="none"
+                stroke={colorScale(fishName)}
+                strokeWidth={1.5}
+              />
+              {fishData.map((d, i) => (
+                <circle
+                  key={`circle-${i}`}
+                  cx={xScale(d.name) ?? 0}
+                  cy={yScale(d.goldPrice)}
+                  r={4}
+                  fill={colorScale(fishName)}
+                  stroke="white"
+                  strokeWidth={1}
+                />
+              ))}
+            </>
           )
         })}
 
