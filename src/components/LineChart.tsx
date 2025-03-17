@@ -70,7 +70,7 @@ export function LineChart() {
       <svg width={layout.root.width} height={layout.root.height}>
         {yTicks.map((d, i) => (
           <line
-            key={i}
+            key={`line-${i}`}
             x1={xScale.range()[0]}
             x2={xScale.range()[1]}
             y1={yScale(d)}
@@ -81,7 +81,7 @@ export function LineChart() {
         ))}
         {yTicks.map((d, i) => (
           <text
-            key={i}
+            key={`yLabel-${i}`}
             x={xScale.range()[0] - 16}
             y={yScale(d)}
             textAnchor="end"
@@ -93,7 +93,6 @@ export function LineChart() {
         ))}
 
         {Array.from(groupByFish).map(([fishName, fishData]) => {
-          console.log(fishData)
           return (
             <>
               <path
@@ -105,7 +104,7 @@ export function LineChart() {
               />
               {fishData.map((d, i) => (
                 <circle
-                  key={`circle-${i}`}
+                  key={`circle-${d}-${i}`}
                   cx={xScale(d.name) ?? 0}
                   cy={yScale(d.goldPrice)}
                   r={4}

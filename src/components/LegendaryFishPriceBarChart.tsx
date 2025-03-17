@@ -4,6 +4,7 @@ import { fetchLegendaryFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import { useControls } from "leva"
 import { DebugLayout } from "./DebugLayout"
 import { makeLayout } from "yogurt-layout"
+import { Bars, Cartesian, Chart, Grid } from "react-composable-charts"
 
 export function LegendaryFishPriceBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -48,7 +49,11 @@ export function LegendaryFishPriceBarChart() {
     ],
   })
 
-  const xScale = d3
+  const xDomain = filteredData.map((d) => d.name)
+
+  const yDomain = [0, d3.max(data, (d) => d.goldPrice) || 0] as [number, number]
+
+  /* const xScale = d3
     .scaleBand()
     .domain(filteredData.map((d) => d.name))
     .range([layout.chart.left, layout.chart.right])
@@ -59,12 +64,12 @@ export function LegendaryFishPriceBarChart() {
     //.domain([0, 1000])
     .domain([0, d3.max(data, (d) => d.goldPrice) || 0])
     .range([layout.chart.bottom, layout.chart.top])
-    .nice()
+    .nice() */
 
-  const yTicks = yScale.ticks(20)
+  //const yTicks = yScale.ticks(20)
 
-  const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
-  const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
+  //const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
+  //const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
     <>
@@ -77,79 +82,43 @@ export function LegendaryFishPriceBarChart() {
         value={selectedFish}
         onChange={handleFishChange}
       >
-        {Array.from(new Set(data.map((item) => item.fishName))).map((fishName, index) => (
-          <option key={index} value={fishName}>
+        {Array.from(new Set(data.map((item) => item.fishName))).map((fishName) => (
+          <option key={fishName} value={fishName}>
             {fishName}
           </option>
         ))}
       </select>
 
       <svg width={layout.root.width} height={layout.root.height}>
-        {filteredData.map((d, i) => (
-          <g key={i}>
-            <line
-              x1={(xScale(d.name) ?? 0) + xScale.bandwidth() * 0.5}
-              x2={(xScale(d.name) ?? 0) + xScale.bandwidth() * 0.5}
-              y1={yScale.range()[0]}
-              y2={yScale.range()[0] + 8}
-              stroke="grey"
-              strokeWidth={1}
-            />
-          </g>
-        ))}
-
-        {xScale.domain().map((d, i) => (
-          <g key={i}>
-            <text
-              x={(xScale(d) ?? 0) + xScale.bandwidth()}
-              y={layout.xLabels.top + 40}
-              textAnchor="end"
-              transform={`rotate(${xLabelsAngle}, ${(xScale(d) || 0) + xScale.bandwidth() / 2}, ${
-                layout.xLabels.top + 32
-              })`}
-            >
-              {d}
-            </text>
-          </g>
-        ))}
-
-        {yTicks.map((d, i) => (
-          <line
-            key={i}
-            x1={xScale.range()[0]}
-            x2={xScale.range()[1]}
-            y1={yScale(d)}
-            y2={yScale(d)}
-            stroke={d % 500 === 0 ? "grey" : "lightgrey"}
-            strokeWidth={1}
-          />
-        ))}
-        {yTicks.map((d, i) => (
-          <text
-            key={i}
-            x={xScale.range()[0] - 16}
-            y={yScale(d)}
-            textAnchor="end"
-            dominantBaseline="middle"
-            color="red"
+        <Chart
+          width={layout.chart.width}
+          height={layout.chart.height}
+          top={layout.chart.top}
+          left={layout.chart.left}
+        >
+          <Cartesian
+            x={{ scale: "band", domain: xDomain, padding: 0.2 }}
+            y={{ scale: "linear", domain: yDomain }}
+            nice={true}
           >
-            {d}
-          </text>
-        ))}
+            <Grid>
+              <Grid.YLines stroke="grey" />
+              <Grid.YLabels padding={5} />
+            </Grid>
 
-        {filteredData.map((d, i) => (
-          <rect
-            key={i}
-            x={xScale(d.name)}
-            y={yScale(d.goldPrice)}
-            //width={xScale.bandwidth()}
-            width={xScale.bandwidth()}
-            height={yScale.range()[0] - yScale(d.goldPrice)}
-            //height={yScale(400) - yScale(d.goldPrice)} troncatura esempoio
-            fill="#69b3a2"
-            stroke="black"
-          />
-        ))}
+            <Bars
+              data={filteredData}
+              x-data={(d) => d.name}
+              y-data={{ to: (d) => d.goldPrice, base: 0 }}
+              fill="#6bc2be"
+            />
+
+            <Grid>
+              <Grid.XAxes stroke="black" strokeWidth={2} />
+              <Grid.YAxes stroke="black" strokeWidth={2} />
+            </Grid>
+          </Cartesian>
+        </Chart>
         {isDebug && <DebugLayout layout={layout} />}
       </svg>
     </>
