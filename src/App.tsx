@@ -1,22 +1,29 @@
 import "./App.css"
 import { BarChart } from "./components/BarChart"
 import { LegendaryFishPriceBarChart } from "./components/LegendaryFishPriceBarChart"
-import { LineChart } from "./components/LineChart"
+import { MultiLineChart } from "./components/MultiLineChart"
 import { PriceAnalysisBarChart } from "./components/PriceAnalysisBarChart"
 
 function App() {
   return (
     <>
-      <h1>Stardew Valley dataviz</h1>
+      <div className="wrapper">
+        <h1>Stardew Valley dataviz</h1>
 
-      <LegendaryFishPriceBarChart />
+        <LegendaryFishPriceBarChart />
 
-      <LineChart />
-      <PriceAnalysisBarChart />
-      <BarChart />
+        <div className="spacer"></div>
 
-      {/* <TableView tableTitle="Fishes Wiki" filePath="src/data/fish_detail.csv" />
+        <MultiLineChart />
+        <div className="spacer"></div>
+        <PriceAnalysisBarChart />
+        <div className="spacer"></div>
+        <BarChart />
+        <div className="spacer"></div>
+
+        {/* <TableView tableTitle="Fishes Wiki" filePath="src/data/fish_detail.csv" />
       <TableView tableTitle="Fishes Price" filePath="src/data/fish_price_breakdown.csv" /> */}
+      </div>
     </>
   )
 }

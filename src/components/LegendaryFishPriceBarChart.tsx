@@ -4,7 +4,8 @@ import { fetchLegendaryFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import { useControls } from "leva"
 import { DebugLayout } from "./DebugLayout"
 import { makeLayout } from "yogurt-layout"
-import { Bars, Cartesian, Chart, Grid } from "react-composable-charts"
+import { Bars, Cartesian, Chart, Circles, Grid, Line } from "react-composable-charts"
+import styles from "./LegendaryFishPriceBarChart.module.css"
 
 export function LegendaryFishPriceBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -54,20 +55,6 @@ export function LegendaryFishPriceBarChart() {
 
   const yDomain = [0, d3.max(data, (d) => d.goldPrice) || 0] as [number, number]
 
-  /* const xScale = d3
-    .scaleBand()
-    .domain(filteredData.map((d) => d.name))
-    .range([layout.chart.left, layout.chart.right])
-    .padding(0.2)
-
-  const yScale = d3
-    .scaleLinear()
-    //.domain([0, 1000])
-    .domain([0, d3.max(data, (d) => d.goldPrice) || 0])
-    .range([layout.chart.bottom, layout.chart.top])
-    .nice() */
-
-  //const yTicks = yScale.ticks(20)
   const xLabelScale = d3
     .scaleBand()
     .domain(filteredData.map((d) => d.name))
@@ -78,74 +65,93 @@ export function LegendaryFishPriceBarChart() {
 
   return (
     <>
-      <h2>Legendary Fishes Price Breakdown</h2>
-      <h3>{selectedFish} price analysis</h3>
-      <label htmlFor="legendaryFishSelect">Select Legendary Fish:</label>
-      <select
-        name="fishes"
-        id="legendaryFishSelect"
-        value={selectedFish}
-        onChange={handleFishChange}
-      >
-        {Array.from(new Set(data.map((item) => item.fishName))).map((fishName) => (
-          <option key={fishName} value={fishName}>
-            {fishName}
-          </option>
-        ))}
-      </select>
+      <div className={styles.wrapper}>
+        <h2>Legendary Fishes Price Breakdown</h2>
+        <h3>{selectedFish} price analysis</h3>
 
-      <svg width={layout.root.width} height={layout.root.height}>
-        <Chart
-          width={layout.chart.width}
-          height={layout.chart.height}
-          top={layout.chart.top}
-          left={layout.chart.left}
+        <label htmlFor="legendaryFishSelect">Select Legendary Fish:</label>
+        <select
+          name="fishes"
+          id="legendaryFishSelect"
+          value={selectedFish}
+          onChange={handleFishChange}
         >
-          <Cartesian
-            x={{ scale: "band", domain: xDomain, padding: 0.2 }}
-            y={{ scale: "linear", domain: yDomain }}
-            nice={true}
+          {Array.from(new Set(data.map((item) => item.fishName))).map((fishName) => (
+            <option key={fishName} value={fishName}>
+              {fishName}
+            </option>
+          ))}
+        </select>
+
+        <svg width={layout.root.width} height={layout.root.height}>
+          <Chart
+            width={layout.chart.width}
+            height={layout.chart.height}
+            top={layout.chart.top}
+            left={layout.chart.left}
           >
-            <Grid>
-              <Grid.YLines stroke="grey" />
-              <Grid.YLabels padding={5} />
-              {/*<Grid.XLabels
+            <Cartesian
+              x={{ scale: "band", domain: xDomain, padding: 0.2 }}
+              y={{ scale: "linear", domain: yDomain }}
+              nice={true}
+            >
+              <Grid>
+                <Grid.YLines stroke="grey" />
+                <Grid.YLabels padding={5} />
+                {/*<Grid.XLabels
                   padding={5}
                   transform={`rotate(${xLabelsAngle})`
                 />
               )) */}
 
-              {xLabelScale.domain().map((d, i) => (
-                <g key={i}>
-                  <text
-                    x={(xLabelScale(d) ?? 0) + xLabelScale.bandwidth()}
-                    y={layout.xLabels.top + xLabelyOffSet / 2}
-                    textAnchor="end"
-                    transform={`rotate(${xLabelsAngle}, ${
-                      (xLabelScale(d) || 0) + xLabelScale.bandwidth()
-                    }, ${layout.xLabels.top + xLabelyOffSet})`}
-                  >
-                    {d}
-                  </text>
-                </g>
-              ))}
-            </Grid>
+                {xLabelScale.domain().map((d, i) => (
+                  <g key={i}>
+                    <text
+                      x={(xLabelScale(d) ?? 0) + xLabelScale.bandwidth()}
+                      y={layout.xLabels.top + xLabelyOffSet / 2}
+                      textAnchor="end"
+                      transform={`rotate(${xLabelsAngle}, ${
+                        (xLabelScale(d) || 0) + xLabelScale.bandwidth()
+                      }, ${layout.xLabels.top + xLabelyOffSet})`}
+                    >
+                      {d}
+                    </text>
+                  </g>
+                ))}
+              </Grid>
 
-            <Bars
-              data={filteredData}
-              x-data={(d) => d.name}
-              y-data={{ to: (d) => d.goldPrice, base: 0 }}
-              fill="#6bc2be"
-            />
+              <Bars
+                data={filteredData}
+                x-data={(d) => d.name}
+                y-data={{ to: (d) => d.goldPrice, base: 0 }}
+                fill="#6bc2be"
+              />
+              <Line
+                data={filteredData}
+                x-data={(d) => d.name}
+                y-data={(d) => d.goldPrice}
+                stroke="#941acd"
+                strokeWidth={2}
+                curve="monotone-x"
+              />
+              <Circles
+                data={filteredData}
+                x-data={(d) => d.name}
+                y-data={(d) => d.goldPrice}
+                fill="#941acd"
+                stroke="white"
+                r={4}
+              />
 
-            <Grid>
-              <Grid.XAxes stroke="black" strokeWidth={2} />
-              <Grid.YAxes stroke="black" strokeWidth={2} />
-            </Grid>
-          </Cartesian>
-        </Chart>
-        {isDebug && <DebugLayout layout={layout} />}
-      </svg>
+              <Grid>
+                <Grid.XAxes stroke="black" strokeWidth={2} />
+                <Grid.YAxes stroke="black" strokeWidth={2} />
+              </Grid>
+            </Cartesian>
+          </Chart>
+          {isDebug && <DebugLayout layout={layout} />}
+        </svg>
+      </div>
     </>
   )
 }

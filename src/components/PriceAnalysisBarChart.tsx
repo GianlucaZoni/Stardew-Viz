@@ -4,6 +4,7 @@ import * as d3 from "d3"
 import { makeLayout } from "yogurt-layout"
 import { DebugLayout } from "./DebugLayout"
 import { useControls } from "leva"
+import styles from "./PriceAnalysisBarChart.module.css"
 
 export function PriceAnalysisBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -30,7 +31,7 @@ export function PriceAnalysisBarChart() {
 
   const { isDebug, paddingTop, xLabelsHeight } = useControls({
     isDebug: true,
-    paddingTop: { value: 16, min: 0, max: 128, step: 1 },
+    paddingTop: { value: 32, min: 0, max: 128, step: 1 },
     xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
   })
 
@@ -90,7 +91,7 @@ export function PriceAnalysisBarChart() {
   const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <h2>Fish Gold Prices</h2>
       <h3>{selectedFish} price analysis</h3>
       <label htmlFor="fishSelect">Select Fish:</label>

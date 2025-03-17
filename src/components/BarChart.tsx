@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { fetchFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import * as d3 from "d3"
+import styles from "./BarChart.module.css"
 
 export function BarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -93,7 +94,7 @@ export function BarChart() {
   }, [data])
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <h2>All Fish Gold Prices</h2>
       <h3>Imperative D3 Renderer</h3>
       <svg ref={svgRef}></svg>
