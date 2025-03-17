@@ -72,16 +72,22 @@ export function PriceAnalysisBarChart() {
 
   const yTicks = yScale.ticks(20)
 
-  const calculateXLabelsAngle = () => {
-    if (xLabelsHeight > 232) return -90
+  // make it work with Pitagora, usa angolo tra ipotenula label e altezza
+  const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
+
+  /* const calculateXLabelsAngle = () => {
+     if (xLabelsHeight > 232) return -90
     else if (xLabelsHeight < 78) return 0
     else {
       const ratio = (xLabelsHeight - (46 + 32)) / (232 - (46 + 32))
-      return -(ratio * 90)
+      return -(ratio * 90) 
+    return xLabelAngleScale
+      
     }
-  }
+  } */
 
-  const xLabelsAngle = calculateXLabelsAngle()
+  //const xLabelsAngle = calculateXLabelsAngle()
+  const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
     <div>
@@ -156,6 +162,7 @@ export function PriceAnalysisBarChart() {
             //width={xScale.bandwidth()}
             width={xScale.bandwidth()}
             height={yScale.range()[0] - yScale(d.goldPrice)}
+            //height={yScale(400) - yScale(d.goldPrice)} troncatura esempoio
             fill="#69b3a2"
             stroke="black"
           />
