@@ -23,9 +23,10 @@ export function LegendaryFishPriceBarChart() {
     setSelectedFish(e.target.value)
   }
 
-  const { isDebug, xLabelsHeight } = useControls({
+  const { isDebug, xLabelsHeight, xLabelyOffSet } = useControls({
     isDebug: true,
-    xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
+    xLabelsHeight: { value: 140, min: 0, max: 1000, step: 1 },
+    xLabelyOffSet: { value: 32, min: 0, max: 32, step: 1 },
   })
 
   const layout = makeLayout({
@@ -67,9 +68,13 @@ export function LegendaryFishPriceBarChart() {
     .nice() */
 
   //const yTicks = yScale.ticks(20)
-
-  //const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
-  //const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
+  const xLabelScale = d3
+    .scaleBand()
+    .domain(filteredData.map((d) => d.name))
+    .range([layout.chart.left, layout.chart.right])
+    .padding(0.2)
+  const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
+  const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
     <>
@@ -104,6 +109,26 @@ export function LegendaryFishPriceBarChart() {
             <Grid>
               <Grid.YLines stroke="grey" />
               <Grid.YLabels padding={5} />
+              {/*<Grid.XLabels
+                  padding={5}
+                  transform={`rotate(${xLabelsAngle})`
+                />
+              )) */}
+
+              {xLabelScale.domain().map((d, i) => (
+                <g key={i}>
+                  <text
+                    x={(xLabelScale(d) ?? 0) + xLabelScale.bandwidth()}
+                    y={layout.xLabels.top + xLabelyOffSet / 2}
+                    textAnchor="end"
+                    transform={`rotate(${xLabelsAngle}, ${
+                      (xLabelScale(d) || 0) + xLabelScale.bandwidth()
+                    }, ${layout.xLabels.top + xLabelyOffSet})`}
+                  >
+                    {d}
+                  </text>
+                </g>
+              ))}
             </Grid>
 
             <Bars

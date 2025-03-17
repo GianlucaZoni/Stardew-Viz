@@ -94,9 +94,8 @@ export function LineChart() {
 
         {Array.from(groupByFish).map(([fishName, fishData]) => {
           return (
-            <>
+            <g key={`fishGroup-${fishName}`}>
               <path
-                key={`path-${fishName}`}
                 d={lineGenerator(fishData) ?? ""}
                 fill="none"
                 stroke={colorScale(fishName)}
@@ -113,7 +112,7 @@ export function LineChart() {
                   strokeWidth={1}
                 />
               ))}
-            </>
+            </g>
           )
         })}
 
