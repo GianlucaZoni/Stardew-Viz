@@ -4,7 +4,18 @@ import { fetchLegendaryFishGoldPrice, FishGoldPriceData } from "../utils/api"
 import { useControls } from "leva"
 import { DebugLayout } from "./DebugLayout"
 import { makeLayout } from "yogurt-layout"
-import { Bars, Cartesian, Chart, Circles, Grid, Line } from "react-composable-charts"
+import {
+  Bars,
+  Cartesian,
+  CartesianConsumer,
+  Chart,
+  Circles,
+  computePos,
+  Grid,
+  Line,
+  ScaleCategorical,
+  Texts,
+} from "react-composable-charts"
 import styles from "./LegendaryFishPriceBarChart.module.css"
 
 export function LegendaryFishPriceBarChart() {
@@ -55,12 +66,14 @@ export function LegendaryFishPriceBarChart() {
 
   const yDomain = [0, d3.max(data, (d) => d.goldPrice) || 0] as [number, number]
 
-  const xLabelScale = d3
+  /*  const xLabelScale = d3
     .scaleBand()
-    .domain(filteredData.map((d) => d.name))
+    .domain(xDomain)
     .range([layout.chart.left, layout.chart.right])
-    .padding(0.2)
+    .padding(0.2) */
+
   const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
+
   const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
@@ -93,18 +106,38 @@ export function LegendaryFishPriceBarChart() {
             <Cartesian
               x={{ scale: "band", domain: xDomain, padding: 0.2 }}
               y={{ scale: "linear", domain: yDomain }}
-              nice={true}
+              nice="y"
             >
               <Grid>
                 <Grid.YLines stroke="grey" />
                 <Grid.YLabels padding={5} />
-                {/*<Grid.XLabels
+                <CartesianConsumer>
+                  {({ xScale }) => (
+                    <Texts
+                      data={(xScale as ScaleCategorical).domain()}
+                      x={(d) => computePos(d, xScale, "end")}
+                      y={layout.xLabels.top + xLabelyOffSet / 2}
+                      textAnchor="end"
+                      dominantBaseline="auto"
+                      text={(d) => d}
+                      transform={(d) =>
+                        `rotate(${xLabelsAngle}, ${computePos(d, xScale, "end")}, ${
+                          layout.xLabels.top + xLabelyOffSet
+                        })`
+                      }
+                    />
+                  )}
+                </CartesianConsumer>
+                {/* <Grid.XLabels
                   padding={5}
-                  transform={`rotate(${xLabelsAngle})`
-                />
-              )) */}
-
-                {xLabelScale.domain().map((d, i) => (
+                  transform={(d) =>
+                    `rotate(${xLabelsAngle}, ${(xLabelScale(d) || 0) + xLabelScale.bandwidth()}, ${
+                      layout.xLabels.top + xLabelyOffSet
+                    })`
+                  }
+                /> */}
+                //
+                {/* {xLabelScale.domain().map((d, i) => (
                   <g key={i}>
                     <text
                       x={(xLabelScale(d) ?? 0) + xLabelScale.bandwidth()}
@@ -117,7 +150,7 @@ export function LegendaryFishPriceBarChart() {
                       {d}
                     </text>
                   </g>
-                ))}
+                ))} */}
               </Grid>
 
               <Bars

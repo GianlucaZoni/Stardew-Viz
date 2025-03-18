@@ -29,11 +29,13 @@ export function PriceAnalysisBarChart() {
     xLabelsAngle: { value: -30, min: -90, max: 90, step: 1 },
   }) */
 
-  const { isDebug, paddingTop, xLabelsHeight } = useControls({
+  const { isDebug, paddingTop, xLabelAngle } = useControls({
     isDebug: true,
     paddingTop: { value: 32, min: 0, max: 128, step: 1 },
     xLabelsHeight: { value: 128, min: 0, max: 1000, step: 1 },
+    xLabelAngle: { value: 90, min: 0, max: 90, step: 1 },
   })
+  const xLabelsHeight = Math.cos((xLabelAngle * Math.PI) / 180) * 200
 
   const layout = makeLayout({
     id: "root",
@@ -63,15 +65,16 @@ export function PriceAnalysisBarChart() {
     .padding(0.2)
 
   const yScale = d3
-    .scaleLinear()
+    .scaleSymlog()
     //.domain([0, 1000])
     .domain([0, d3.max(data, (d) => d.goldPrice) || 0])
     .range([layout.chart.bottom, layout.chart.top])
+    .constant(100)
     .nice()
 
   //console.log(yScale.domain())
 
-  const yTicks = yScale.ticks(20)
+  const yTicks = yScale.ticks(10)
 
   // make it work with Pitagora, usa angolo tra ipotenula label e altezza
   const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
@@ -88,7 +91,7 @@ export function PriceAnalysisBarChart() {
   } */
 
   //const xLabelsAngle = calculateXLabelsAngle()
-  const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
+  //const xLabelsAngle = xLabelAngleScale(xLabelsHeight)
 
   return (
     <div className={styles.wrapper}>
@@ -122,9 +125,9 @@ export function PriceAnalysisBarChart() {
               x={(xScale(d) ?? 0) + xScale.bandwidth()}
               y={layout.xLabels.top + 40}
               textAnchor="end"
-              transform={`rotate(${xLabelsAngle}, ${(xScale(d) || 0) + xScale.bandwidth() / 2}, ${
-                layout.xLabels.top + 32
-              })`}
+              transform={`rotate(${-90 + xLabelAngle}, ${
+                (xScale(d) || 0) + xScale.bandwidth() / 2
+              }, ${layout.xLabels.top + 32})`}
             >
               {d}
             </text>

@@ -3,12 +3,16 @@ import { BarChart } from "./components/BarChart"
 import { LegendaryFishPriceBarChart } from "./components/LegendaryFishPriceBarChart"
 import { MultiLineChart } from "./components/MultiLineChart"
 import { PriceAnalysisBarChart } from "./components/PriceAnalysisBarChart"
+import { ScatterPlot } from "./components/ScatterPlot"
 
 function App() {
   return (
     <>
       <div className="wrapper">
         <h1>Stardew Valley dataviz</h1>
+
+        <ScatterPlot />
+        <div className="spacer"></div>
 
         <LegendaryFishPriceBarChart />
 
