@@ -22,13 +22,8 @@ export function MultiLineChart() {
     fetchFishGoldPrice().then((res) => setData(res))
   }, [])
 
-  console.log(data)
-
   const filteredData = data.filter((d) => d.fishName)
   const groupByFish = d3.group(filteredData, (d) => d.fishName)
-
-  console.log(filteredData)
-  console.log(groupByFish)
 
   const { isDebug, xLabelsHeight, xLabelyOffSet } = useControls({
     isDebug: true,

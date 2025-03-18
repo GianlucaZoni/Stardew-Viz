@@ -25,7 +25,7 @@ export function LegendaryFishPriceBarChart() {
   useEffect(() => {
     fetchLegendaryFishGoldPrice().then((res) => {
       setData(res)
-      console.table(res)
+      //console.table(res)
     })
   }, [])
 
