@@ -77,7 +77,7 @@ export function PriceAnalysisBarChart() {
   const yTicks = yScale.ticks(10)
 
   // make it work with Pitagora, usa angolo tra ipotenula label e altezza
-  const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
+  //const xLabelAngleScale = d3.scaleLinear().domain([78, 232]).range([0, -90]).clamp(true)
 
   /* const calculateXLabelsAngle = () => {
      if (xLabelsHeight > 232) return -90

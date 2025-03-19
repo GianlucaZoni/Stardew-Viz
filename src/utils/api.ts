@@ -19,6 +19,10 @@ export interface FishDetailDatum {
     xp: number,
 }
 
+
+
+
+
 export async function fetchFishGoldPrice(): Promise<FishGoldPriceData[]> {
     const rawData = await csv("/fish_price_breakdown.csv")
 
@@ -56,17 +60,16 @@ export async function fetchFishDetails(): Promise<FishDetailDatum[]> {
     const cleanData = rawData.map(row => {
 
         const sizeString = row["Size (inches)"] || ""
+        const sizeRange = row["Size (inches)"].split('-').map(num => parseInt(num.trim()))
+        const size = sizeRange.length === 2 ? (sizeRange[0] + sizeRange[1]) / 2 : (parseInt(sizeString) ?? 0)
 
-        const calculateMeanSize = (): number => {
-            const sizeRange = sizeString.split('-').map(num => parseInt(num.trim()))
-            if (sizeRange.length === 2) {
-                return (sizeRange[0] + sizeRange[1]) / 2
-            }
-            return parseInt(sizeString) ?? 0
-        }
-        const difficulty = row["Difficulty & Behavior"].split(' ')
-        const difficultyLevel = difficulty ? parseInt(difficulty[0]) : 0
-        const difficultyType = difficulty ? difficulty[1].trim() : ""
+        // const difficulty = row["Difficulty & Behavior"].split(' ')
+        // const difficultyLevel = difficulty ? parseInt(difficulty[0]) : 0
+        // const difficultyType = difficulty ? difficulty[1].trim() : ""
+
+        const [rawDifficultyLevel, rawDifficultyType = ""] = row["Difficulty & Behavior"].split(' ')
+        const difficultyLevel = parseInt(rawDifficultyLevel || "0")
+        const difficultyType = rawDifficultyType.trim()
 
         return {
             fishName: row.Name,
@@ -75,7 +78,7 @@ export async function fetchFishDetails(): Promise<FishDetailDatum[]> {
             time: row.Time,
             season: row.Season,
             weather: row.Weather,
-            size: calculateMeanSize(),
+            size,
             difficultyLevel,
             difficultyType,
             xp: parseInt(row["Base XP"] || "0")

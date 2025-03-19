@@ -96,94 +96,75 @@ export function LegendaryFishPriceBarChart() {
           ))}
         </select>
 
-        <svg width={layout.root.width} height={layout.root.height}>
-          <Chart
-            width={layout.chart.width}
-            height={layout.chart.height}
-            top={layout.chart.top}
-            left={layout.chart.left}
-          >
-            <Cartesian
-              x={{ scale: "band", domain: xDomain, padding: 0.2 }}
-              y={{ scale: "linear", domain: yDomain }}
-              nice="y"
+        {data.length > 0 ? (
+          <svg width={layout.root.width} height={layout.root.height}>
+            <Chart
+              width={layout.chart.width}
+              height={layout.chart.height}
+              top={layout.chart.top}
+              left={layout.chart.left}
             >
-              <Grid>
-                <Grid.YLines stroke="grey" />
-                <Grid.YLabels padding={5} />
-                <CartesianConsumer>
-                  {({ xScale }) => (
-                    <Texts
-                      data={(xScale as ScaleCategorical).domain()}
-                      x={(d) => computePos(d, xScale, "end")}
-                      y={layout.xLabels.top + xLabelyOffSet / 2}
-                      textAnchor="end"
-                      dominantBaseline="auto"
-                      text={(d) => d}
-                      transform={(d) =>
-                        `rotate(${xLabelsAngle}, ${computePos(d, xScale, "end")}, ${
-                          layout.xLabels.top + xLabelyOffSet
-                        })`
-                      }
-                    />
-                  )}
-                </CartesianConsumer>
-                {/* <Grid.XLabels
-                  padding={5}
-                  transform={(d) =>
-                    `rotate(${xLabelsAngle}, ${(xLabelScale(d) || 0) + xLabelScale.bandwidth()}, ${
-                      layout.xLabels.top + xLabelyOffSet
-                    })`
-                  }
-                /> */}
-                //
-                {/* {xLabelScale.domain().map((d, i) => (
-                  <g key={i}>
-                    <text
-                      x={(xLabelScale(d) ?? 0) + xLabelScale.bandwidth()}
-                      y={layout.xLabels.top + xLabelyOffSet / 2}
-                      textAnchor="end"
-                      transform={`rotate(${xLabelsAngle}, ${
-                        (xLabelScale(d) || 0) + xLabelScale.bandwidth()
-                      }, ${layout.xLabels.top + xLabelyOffSet})`}
-                    >
-                      {d}
-                    </text>
-                  </g>
-                ))} */}
-              </Grid>
+              <Cartesian
+                x={{ scale: "band", domain: xDomain, padding: 0.2 }}
+                y={{ scale: "linear", domain: yDomain }}
+                nice="y"
+              >
+                <Grid>
+                  <Grid.YLines stroke="grey" />
+                  <Grid.YLabels padding={5} />
+                  <CartesianConsumer>
+                    {({ xScale }) => (
+                      <Texts
+                        data={(xScale as ScaleCategorical).domain()}
+                        x={(d) => computePos(d, xScale, "end")}
+                        y={layout.xLabels.top + xLabelyOffSet / 2}
+                        textAnchor="end"
+                        dominantBaseline="auto"
+                        text={(d) => d}
+                        transform={(d) =>
+                          `rotate(${xLabelsAngle}, ${computePos(d, xScale, "end")}, ${
+                            layout.xLabels.top + xLabelyOffSet
+                          })`
+                        }
+                      />
+                    )}
+                  </CartesianConsumer>
+                </Grid>
 
-              <Bars
-                data={filteredData}
-                x-data={(d) => d.name}
-                y-data={{ to: (d) => d.goldPrice, base: 0 }}
-                fill="#6bc2be"
-              />
-              <Line
-                data={filteredData}
-                x-data={(d) => d.name}
-                y-data={(d) => d.goldPrice}
-                stroke="#941acd"
-                strokeWidth={2}
-                curve="monotone-x"
-              />
-              <Circles
-                data={filteredData}
-                x-data={(d) => d.name}
-                y-data={(d) => d.goldPrice}
-                fill="#941acd"
-                stroke="white"
-                r={4}
-              />
+                <Bars
+                  data={filteredData}
+                  x-data={(d) => d.name}
+                  y-data={{ to: (d) => d.goldPrice, base: 0 }}
+                  fill="#6bc2be"
+                />
+                <Line
+                  data={filteredData}
+                  x-data={(d) => d.name}
+                  y-data={(d) => d.goldPrice}
+                  stroke="#941acd"
+                  strokeWidth={2}
+                  curve="monotone-x"
+                />
+                <Circles
+                  data={filteredData}
+                  x-data={(d) => d.name}
+                  y-data={(d) => d.goldPrice}
+                  fill="#941acd"
+                  stroke="white"
+                  r={4}
+                />
 
-              <Grid>
-                <Grid.XAxes stroke="black" strokeWidth={2} />
-                <Grid.YAxes stroke="black" strokeWidth={2} />
-              </Grid>
-            </Cartesian>
-          </Chart>
-          {isDebug && <DebugLayout layout={layout} />}
-        </svg>
+                <Grid>
+                  <Grid.XAxes stroke="black" strokeWidth={2} />
+                  <Grid.YAxes stroke="black" strokeWidth={2} />
+                </Grid>
+              </Cartesian>
+            </Chart>
+            {isDebug && <DebugLayout layout={layout} />}
+          </svg>
+        ) : (
+          <h3>pondering the pond...</h3>
+        )}
       </div>
     </>
   )
