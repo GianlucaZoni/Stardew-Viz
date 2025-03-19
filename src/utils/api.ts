@@ -12,7 +12,7 @@ export interface FishDetailDatum {
     location: string,
     time: string,
     season: string,
-    weather: string,
+    weather: string[],
     size: number,
     difficultyLevel: number,
     difficultyType: string
@@ -71,13 +71,15 @@ export async function fetchFishDetails(): Promise<FishDetailDatum[]> {
         const difficultyLevel = parseInt(rawDifficultyLevel || "0")
         const difficultyType = rawDifficultyType.trim()
 
+        const weather = row["Weather"].split(' ')
+
         return {
             fishName: row.Name,
             description: row.Description,
             location: row.Location,
             time: row.Time,
             season: row.Season,
-            weather: row.Weather,
+            weather,
             size,
             difficultyLevel,
             difficultyType,

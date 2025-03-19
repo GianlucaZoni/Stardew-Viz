@@ -6,7 +6,6 @@ import { makeLayout } from "yogurt-layout"
 import { useControls } from "leva"
 import { Cartesian, Chart, Grid, Rects } from "react-composable-charts"
 import { DebugLayout } from "./DebugLayout"
-import { Season } from "../utils/types"
 
 type YAxis = "size" | "difficultyLevel" | "doubledSize"
 
@@ -15,7 +14,7 @@ const isDoubleSizeKey = (key: YAxis): key is "doubledSize" => key === "doubledSi
 export function ScatterPlot() {
   const [data, setData] = useState<FishDetailDatum[]>([])
   const [selectedYAxis, setSelectedYAxis] = useState<YAxis>("size")
-  const [selectedSeason, setSelectedSeason] = useState<Season>("allSeasons")
+  //const [selectedSeason, setSelectedSeason] = useState<Season>("allSeasons")
 
   useEffect(() => {
     fetchFishDetails().then((res) => {
@@ -24,16 +23,16 @@ export function ScatterPlot() {
     })
   }, [])
 
-  const seasonedData = data.filter(
+  /* const seasonedData = data.filter(
     (d) => d.season === selectedSeason
-    /* {
+     {
     selectedSeason === "allSeasons" ? true : d.season?.includes(selectedSeason)
-  } */
-  )
+  }
+  ) */
 
   //const filteredData = data.filter((d) => d.fishName)
 
-  const { isDebug, xLabelsHeight } = useControls({
+  const { isDebug, xLabelsHeight } = useControls("Scatterplot Fishing Rewards", {
     isDebug: true,
     xLabelsHeight: { value: 140, min: 0, max: 1000, step: 1 },
   })
@@ -70,8 +69,11 @@ export function ScatterPlot() {
 
   const yDomain = d3.extent(data, getYValue) as [number, number]
 
-  //const colorScale = d3.scaleOrdinal().domain(data.filter((d)=>d.season)).range(["grey","green","orange","brown","blue"])
-  const colorScale = d3.scaleOrdinal(d3.schemeObservable10)
+  const colorScale = d3
+    .scaleOrdinal()
+    .domain(Array.from(new Set(data.flatMap((d) => d.weather))))
+    .range(["green", "orange", "blue", "grey"])
+  //const colorScale = d3.scaleOrdinal(d3.schemeObservable10)
 
   const handleYAxisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedYAxis(e.target.value as YAxis)
@@ -158,7 +160,9 @@ export function ScatterPlot() {
                   x={-10}
                   y={-10}
                   rx={5}
-                  fill={(d) => colorScale(d.season)}
+                  fill={(d) => {
+                    return colorScale(d.weather[0]) as string
+                  }}
                 />
               </Cartesian>
             </Chart>
