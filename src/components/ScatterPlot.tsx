@@ -19,7 +19,7 @@ export function ScatterPlot() {
   useEffect(() => {
     fetchFishDetails().then((res) => {
       setData(res)
-      console.table(res)
+      //console.table(res)
     })
   }, [])
 
@@ -86,7 +86,7 @@ export function ScatterPlot() {
 
   return (
     <>
-      <div className={styles.wrappper}>
+      <div className={styles.wrapper}>
         <h2>Scatterplot Fishing Rewards</h2>
         <div className={styles.filters}>
           <div className="selector">

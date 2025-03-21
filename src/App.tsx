@@ -1,5 +1,6 @@
 import "./App.css"
 import { BarChart } from "./components/BarChart"
+import { FishTimes } from "./components/FishtTimes"
 import { LegendaryFishPriceBarChart } from "./components/LegendaryFishPriceBarChart"
 import { MultiLineChart } from "./components/MultiLineChart"
 import { PriceAnalysisBarChart } from "./components/PriceAnalysisBarChart"
@@ -10,6 +11,9 @@ function App() {
     <>
       <div className="wrapper">
         <h1>Stardew Valley dataviz</h1>
+
+        <FishTimes />
+        <div className="spacer"></div>
 
         <ScatterPlot />
         <div className="spacer"></div>
