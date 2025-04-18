@@ -25,8 +25,6 @@ export interface TimeRange {
     end: number
 }
 
-
-
 export async function fetchFishGoldPrice(): Promise<FishGoldPriceData[]> {
     const rawData = await csv("/fish_price_breakdown.csv")
 
@@ -97,31 +95,18 @@ export async function fetchFishDetails(): Promise<FishDetailDatum[]> {
 
 function parseTimeRange(timeString: string): TimeRange[] {
     if (timeString === "Anytime") {
-        return [{ start: 0, end: 24 }]
+        return [{ start: 0, end: 2 }, { start: 6, end: 24 }]
     }
 
-    const ranges: TimeRange[] = []
-
-    // Normalize dashes and spaces
-    const normalizedString = timeString.replace(/–/g, '-').replace(/\s+/g, ' ').trim()
-    console.log(timeString)
-    console.log(normalizedString)
-    // Split the string by spaces that are not within a time range
-    // This handles cases like "6am - 11am 7pm - 2am"
-    const timeRangeStrings = normalizedString.split(/\s+(?=\d+(?:am|pm))/i)
-    console.log(timeRangeStrings)
-    //console.log(normalizedString)
-    //console.log(timeRangeStrings)
-
-
-    console.log("NEW REGEX", ([...timeString.matchAll((/\d+(am|pm)/g))].map(match => match[0])))
     const timesStrings = [...timeString.matchAll((/\d+(am|pm)/g))].map(match => match[0])
     const times = timesStrings.map((str) => str.endsWith('pm') ? parseInt(str) + 12 : parseInt(str))
 
     const rawTimeRanges = chunk(times, 2)
 
     const timeRanges = rawTimeRanges.flatMap<TimeRange>(([start, end]) => {
-        if (start <= end) return [{ start, end }]
+        if (start === 24 && end >= 6) return [{ start: 0, end: 2 }, { start: 6, end }]
+        else if (start <= 2 && end >= 6) return [{ start, end: 2 }, { start: 6, end }]
+        else if (start <= end) return [{ start, end }]
         return [{ start, end: 24 }, { start: 0, end }]
     })
 
@@ -129,39 +114,4 @@ function parseTimeRange(timeString: string): TimeRange[] {
     console.log(times)
 
     return timeRanges
-    // for (const rangeStr of timeRangeStrings) {
-    //     // Extract the start and end times using a simpler approach
-    //     const parts = rangeStr.split('-').map(s => s.trim());
-
-    //     if (parts.length === 2) {
-    //         const startTime = convertTo24Hour(parts[0]);
-    //         let endTime = convertTo24Hour(parts[1]);
-
-    //         // Handle time ranges that span across midnight
-    //         if (endTime < startTime) {
-    //             endTime += 24;
-    //         }
-
-    //         ranges.push({ start: startTime, end: endTime });
-    //     }
-    // }
-
-    // return ranges
-}
-
-function convertTo24Hour(timeString: string): number {
-    const match = timeString.match(/(\d+)(am|pm)/i)
-    if (!match) return 0
-
-    let hours = parseInt(match[1])
-    const isPM = timeString.includes('pm')
-    const isAM = timeString.includes('am')
-
-    if (isPM && hours < 12) {
-        hours += 12;
-    } else if (isAM && hours === 12) {
-        hours = 0;
-    }
-
-    return hours
 }

@@ -10,9 +10,7 @@ import {
   CartesianConsumer,
   Chart,
   computePos,
-  Elements,
   Grid,
-  Line,
   ScaleCategorical,
   Texts,
 } from "react-composable-charts"
@@ -30,7 +28,7 @@ export function FishTimes() {
 
   const { isDebug, width } = useControls("Time Availability", {
     isDebug: true,
-    width: { value: 1600, min: 0, max: 3000, step: 1 },
+    width: { value: window.innerWidth, min: 0, max: 3000, step: 1 },
   })
 
   const flattenedData = data.flatMap((fish) =>
@@ -39,6 +37,7 @@ export function FishTimes() {
       start: timeRange.start,
       end: timeRange.end,
       xp: fish.xp,
+      size: fish.size,
       hasMultipleTimeranges: fish.time.length > 1,
     }))
   )
@@ -66,15 +65,10 @@ export function FishTimes() {
   const xDomain = data.map((d) => d.fishName)
   const yDomain = [24, 0]
 
-  const xScale = d3
-    .scaleBand()
-    .domain(data.map((d) => d.fishName))
-    .range([layout.chart.left, layout.chart.right])
-
-  const xpScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.xp) || 0])
-    .range([xScale.bandwidth(), 0])
+  //   const xScale = d3
+  //     .scaleBand()
+  //     .domain(data.map((d) => d.fishName))
+  //     .range([layout.chart.left, layout.chart.right])
 
   return (
     <>
@@ -103,54 +97,54 @@ export function FishTimes() {
                     {({ xScale }) => (
                       <Texts
                         data={(xScale as ScaleCategorical).domain()}
-                        x={(d) => computePos(d, xScale, "start")}
+                        x={(d) => computePos(d, xScale, "center")}
                         y={layout.xLabels.top + 16}
-                        width={(d) => computePos(d, xScale, "end")}
                         textAnchor="end"
                         dominantBaseline="auto"
                         text={(d) => d}
                         transform={(d) =>
-                          `rotate(-35, ${computePos(d, xScale, "end")}, ${layout.xLabels.top + 32})`
+                          `rotate(-35, ${computePos(d, xScale, "center")}, ${
+                            layout.xLabels.top + 32
+                          })`
                         }
                       />
                     )}
                   </CartesianConsumer>
                 </Grid>
 
-                {/* bars width = bandwidth della scale band 
-                    no xp involved */}
-                {/* <Bars
-                  data={flattenedData}
-                  x-data={(d) => d.fishName}
-                  y-data={{ to: 16, base: 14 }}
-                  fill="green"
-                  stroke={"white"}
-                /> */}
-
-                {/* bars width = bandwidth xDomain + xP */}
                 <Bars
-                  data={flattenedData}
+                  data={data}
                   x-data={(d) => d.fishName}
-                  y-data={{ to: (d) => d.end, base: (d) => d.start }}
-                  width={(d) => -xpScale(d.xp)}
-                  fill={(d) => (d.hasMultipleTimeranges ? "red" : "#5e9dd0")}
-                  rx={10}
+                  y-data={{ base: 2, to: 6 }}
+                  fill="black"
                 />
 
-                {/* {data.map((d, i) => {
-                  console.log(d)
-                  return (
-                    <Bars
-                      key={i}
-                      data={flattenedData}
-                      x-data={(f) => f.fishName}
-                      y-data={{ to: 6, base: 4 }}
-                      width={xpScale(d.xp)}
-                      fill="#e0b247"
-                      stroke="white"
-                    />
-                  )
-                })} */}
+                <CartesianConsumer>
+                  {({ xScale }) => {
+                    // const xpScale = d3
+                    //   .scaleLinear()
+                    //   .domain([0, d3.max(data, (d) => d.xp) || 0])
+                    //   .range([(xScale as ScaleCategorical).bandwidth(), 0])
+
+                    const sizeScale = d3
+                      .scaleLinear()
+                      .domain([0, d3.max(data, (d) => d.size) || 0])
+                      .range([(xScale as ScaleCategorical).bandwidth(), 0])
+
+                    return (
+                      <Bars
+                        data={flattenedData}
+                        x-data={(d) => d.fishName}
+                        y-data={{ to: (d) => d.end, base: (d) => d.start }}
+                        width={(d) => -sizeScale(d.size)}
+                        fill={(d) => (d.hasMultipleTimeranges ? "red" : "#5e9dd0")}
+                        rx={(d) =>
+                          ((xScale as ScaleCategorical).bandwidth() - sizeScale(d.size)) / 2
+                        }
+                      />
+                    )
+                  }}
+                </CartesianConsumer>
               </Cartesian>
             </Chart>
             {isDebug && <DebugLayout layout={layout} />}
