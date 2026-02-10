@@ -5,6 +5,7 @@ import { useControls } from "leva"
 import { DebugLayout } from "./DebugLayout"
 import { makeLayout } from "yogurt-layout"
 import styles from "./MultiLineChart.module.css"
+import { STARDEW_COLORS, STARDEW_DATA_COLORS, StardewDefs, ChartFrame, StardewTooltip } from "../utils/stardewTheme"
 
 export function MultiLineChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -70,7 +71,7 @@ export function MultiLineChart() {
     .y((d) => yScale(d.goldPrice))
     .curve(d3.curveLinear)
 
-  const colorScale = d3.scaleOrdinal(d3.schemeObservable10)
+  const colorScale = d3.scaleOrdinal(STARDEW_DATA_COLORS)
 
   const yTicks = yScale.ticks(20)
 
@@ -82,6 +83,10 @@ export function MultiLineChart() {
       <div className={styles.wrapper}>
         <h2>MultiLine Fish Price Analysis</h2>
         <svg width={layout.root.width} height={layout.root.height}>
+          <StardewDefs />
+          <g transform={`translate(${0}, ${0})`}>
+            <ChartFrame width={layout.root.width} height={layout.root.height} borderWidth={10} />
+          </g>
           {yTicks.map((d, i) => (
             <line
               key={`line-${i}`}
@@ -89,7 +94,7 @@ export function MultiLineChart() {
               x2={xScale.range()[1]}
               y1={yScale(d)}
               y2={yScale(d)}
-              stroke={d % 500 === 0 ? "grey" : "lightgrey"}
+              stroke={d % 500 === 0 ? STARDEW_COLORS.woodLight : STARDEW_COLORS.gridLine}
               strokeWidth={1}
             />
           ))}
@@ -100,7 +105,8 @@ export function MultiLineChart() {
               y={yScale(d)}
               textAnchor="end"
               dominantBaseline="middle"
-              color="red"
+              fill={STARDEW_COLORS.textDark}
+              fontSize={14}
             >
               {d}
             </text>
@@ -112,6 +118,8 @@ export function MultiLineChart() {
                 x={(xScale(d) ?? 0) + xScale.bandwidth()}
                 y={layout.xLabels.top + xLabelyOffSet / 2}
                 textAnchor="end"
+                fill={STARDEW_COLORS.textDark}
+                fontSize={13}
                 transform={`rotate(${xLabelsAngle}, ${(xScale(d) || 0) + xScale.bandwidth()}, ${
                   layout.xLabels.top + xLabelyOffSet
                 })`}

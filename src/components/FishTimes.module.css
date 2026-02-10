@@ -1,6 +1,41 @@
-.wrapper {
+.wrappper {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(180deg, rgba(253,246,227,0.6) 0%, rgba(196,148,106,0.08) 100%);
+    border: 3px solid #8B5E3C;
+    border-radius: 6px;
+    padding: 24px 16px;
+    box-shadow: 0 4px 12px rgba(62,39,35,0.15), inset 0 1px 0 rgba(253,246,227,0.5);
+    position: relative;
+}
+
+.wrappper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #C4946A, #F5C542, #C4946A);
+    border-radius: 4px 4px 0 0;
+}
+
+.wrappper h2 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+button:active {
+    color: #DC143C;
 }

@@ -15,6 +15,7 @@ import {
   Texts,
 } from "react-composable-charts"
 import * as d3 from "d3"
+import { STARDEW_COLORS, StardewDefs, ChartFrame } from "../utils/stardewTheme"
 
 export function FishTimes() {
   const [data, setData] = useState<FishDetailDatum[]>([])
@@ -76,6 +77,10 @@ export function FishTimes() {
         <h2>Fishes Time Availability</h2>
         {data.length > 0 ? (
           <svg width={layout.root.width} height={layout.root.height}>
+            <StardewDefs />
+            <g transform={`translate(${0}, ${0})`}>
+              <ChartFrame width={layout.root.width} height={layout.root.height} borderWidth={10} />
+            </g>
             <Chart
               width={layout.chart.width}
               height={layout.chart.height}
@@ -88,10 +93,9 @@ export function FishTimes() {
                 nice={true}
               >
                 <Grid>
-                  {/* <Grid.XLines stroke="grey" /> */}
-                  <Grid.YLines stroke="grey" />
-                  <Grid.XAxes stroke="black" strokeWidth={2} />
-                  <Grid.YAxes stroke="black" strokeWidth={2} />
+                  <Grid.YLines stroke={STARDEW_COLORS.gridLine} />
+                  <Grid.XAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
+                  <Grid.YAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
                   <Grid.YLabels padding={5} />
                   <CartesianConsumer>
                     {({ xScale }) => (
@@ -102,6 +106,7 @@ export function FishTimes() {
                         textAnchor="end"
                         dominantBaseline="auto"
                         text={(d) => d}
+                        fill={STARDEW_COLORS.textDark}
                         transform={(d) =>
                           `rotate(-35, ${computePos(d, xScale, "center")}, ${
                             layout.xLabels.top + 32
@@ -116,16 +121,12 @@ export function FishTimes() {
                   data={data}
                   x-data={(d) => d.fishName}
                   y-data={{ base: 2, to: 6 }}
-                  fill="black"
+                  fill={STARDEW_COLORS.soilDark}
+                  opacity={0.15}
                 />
 
                 <CartesianConsumer>
                   {({ xScale }) => {
-                    // const xpScale = d3
-                    //   .scaleLinear()
-                    //   .domain([0, d3.max(data, (d) => d.xp) || 0])
-                    //   .range([(xScale as ScaleCategorical).bandwidth(), 0])
-
                     const sizeScale = d3
                       .scaleLinear()
                       .domain([0, d3.max(data, (d) => d.size) || 0])
@@ -137,10 +138,12 @@ export function FishTimes() {
                         x-data={(d) => d.fishName}
                         y-data={{ to: (d) => d.end, base: (d) => d.start }}
                         width={(d) => -sizeScale(d.size)}
-                        fill={(d) => (d.hasMultipleTimeranges ? "red" : "#5e9dd0")}
+                        fill={(d) => (d.hasMultipleTimeranges ? STARDEW_COLORS.cranberryRed : STARDEW_COLORS.blueberryBlue)}
                         rx={(d) =>
                           ((xScale as ScaleCategorical).bandwidth() - sizeScale(d.size)) / 2
                         }
+                        stroke={STARDEW_COLORS.woodDark}
+                        strokeWidth={0.5}
                       />
                     )
                   }}

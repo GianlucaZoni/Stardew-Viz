@@ -10,7 +10,10 @@ function App() {
   return (
     <>
       <div className="wrapper">
-        <h1>Stardew Valley dataviz</h1>
+        <div className="page-header">
+          <h1>Stardew Valley dataviz</h1>
+          <p className="page-subtitle">A visual guide to fish, crops & profits</p>
+        </div>
 
         <FishTimes />
         <div className="spacer"></div>

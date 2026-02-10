@@ -17,6 +17,7 @@ import {
   Texts,
 } from "react-composable-charts"
 import styles from "./LegendaryFishPriceBarChart.module.css"
+import { STARDEW_COLORS, StardewDefs, ChartFrame } from "../utils/stardewTheme"
 
 export function LegendaryFishPriceBarChart() {
   const [data, setData] = useState<FishGoldPriceData[]>([])
@@ -98,6 +99,10 @@ export function LegendaryFishPriceBarChart() {
 
         {data.length > 0 ? (
           <svg width={layout.root.width} height={layout.root.height}>
+            <StardewDefs />
+            <g transform={`translate(${0}, ${0})`}>
+              <ChartFrame width={layout.root.width} height={layout.root.height} borderWidth={10} />
+            </g>
             <Chart
               width={layout.chart.width}
               height={layout.chart.height}
@@ -110,7 +115,7 @@ export function LegendaryFishPriceBarChart() {
                 nice="y"
               >
                 <Grid>
-                  <Grid.YLines stroke="grey" />
+                  <Grid.YLines stroke={STARDEW_COLORS.gridLine} />
                   <Grid.YLabels padding={5} />
                   <CartesianConsumer>
                     {({ xScale }) => (
@@ -121,6 +126,7 @@ export function LegendaryFishPriceBarChart() {
                         textAnchor="end"
                         dominantBaseline="auto"
                         text={(d) => d}
+                        fill={STARDEW_COLORS.textDark}
                         transform={(d) =>
                           `rotate(${xLabelsAngle}, ${computePos(d, xScale, "end")}, ${
                             layout.xLabels.top + xLabelyOffSet
@@ -135,28 +141,32 @@ export function LegendaryFishPriceBarChart() {
                   data={filteredData}
                   x-data={(d) => d.name}
                   y-data={{ to: (d) => d.goldPrice, base: 0 }}
-                  fill="#6bc2be"
+                  fill={STARDEW_COLORS.melonGreen}
+                  stroke={STARDEW_COLORS.woodDark}
+                  strokeWidth={0.5}
+                  opacity={0.8}
                 />
                 <Line
                   data={filteredData}
                   x-data={(d) => d.name}
                   y-data={(d) => d.goldPrice}
-                  stroke="#941acd"
-                  strokeWidth={2}
+                  stroke={STARDEW_COLORS.iridiumStar}
+                  strokeWidth={2.5}
                   curve="monotone-x"
                 />
                 <Circles
                   data={filteredData}
                   x-data={(d) => d.name}
                   y-data={(d) => d.goldPrice}
-                  fill="#941acd"
-                  stroke="white"
-                  r={4}
+                  fill={STARDEW_COLORS.iridiumStar}
+                  stroke={STARDEW_COLORS.parchment}
+                  r={5}
+                  strokeWidth={2}
                 />
 
                 <Grid>
-                  <Grid.XAxes stroke="black" strokeWidth={2} />
-                  <Grid.YAxes stroke="black" strokeWidth={2} />
+                  <Grid.XAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
+                  <Grid.YAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
                 </Grid>
               </Cartesian>
             </Chart>

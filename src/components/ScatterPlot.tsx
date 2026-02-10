@@ -6,6 +6,7 @@ import { makeLayout } from "yogurt-layout"
 import { useControls } from "leva"
 import { Cartesian, Chart, Grid, Rects } from "react-composable-charts"
 import { DebugLayout } from "./DebugLayout"
+import { STARDEW_COLORS, WEATHER_COLORS, StardewDefs, ChartFrame } from "../utils/stardewTheme"
 
 type YAxis = "size" | "difficultyLevel" | "doubledSize"
 
@@ -69,11 +70,11 @@ export function ScatterPlot() {
 
   const yDomain = d3.extent(data, getYValue) as [number, number]
 
+  const weatherDomain = Array.from(new Set(data.flatMap((d) => d.weather)))
   const colorScale = d3
-    .scaleOrdinal()
-    .domain(Array.from(new Set(data.flatMap((d) => d.weather))))
-    .range(["green", "orange", "blue", "grey"])
-  //const colorScale = d3.scaleOrdinal(d3.schemeObservable10)
+    .scaleOrdinal<string>()
+    .domain(weatherDomain)
+    .range(weatherDomain.map((w) => WEATHER_COLORS[w] || STARDEW_COLORS.woodMedium))
 
   const handleYAxisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedYAxis(e.target.value as YAxis)
@@ -131,6 +132,10 @@ export function ScatterPlot() {
         </div>
         {data.length > 0 ? (
           <svg width={layout.root.width} height={layout.root.height}>
+            <StardewDefs />
+            <g transform={`translate(${0}, ${0})`}>
+              <ChartFrame width={layout.root.width} height={layout.root.height} borderWidth={10} />
+            </g>
             <Chart
               width={layout.chart.width}
               height={layout.chart.height}
@@ -143,10 +148,10 @@ export function ScatterPlot() {
                 nice
               >
                 <Grid>
-                  <Grid.XLines stroke="grey" />
-                  <Grid.YLines stroke="grey" />
-                  <Grid.XAxes stroke="black" strokeWidth={2} />
-                  <Grid.YAxes stroke="black" strokeWidth={2} />
+                  <Grid.XLines stroke={STARDEW_COLORS.gridLine} />
+                  <Grid.YLines stroke={STARDEW_COLORS.gridLine} />
+                  <Grid.XAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
+                  <Grid.YAxes stroke={STARDEW_COLORS.axisLine} strokeWidth={2} />
                   <Grid.XLabels padding={5} />
                   <Grid.YLabels padding={5} />
                 </Grid>
@@ -155,17 +160,30 @@ export function ScatterPlot() {
                   data={data}
                   x-data={(d) => d.xp}
                   y-data={getYValue}
-                  width={20}
-                  height={20}
-                  x={-10}
-                  y={-10}
-                  rx={5}
+                  width={16}
+                  height={16}
+                  x={-8}
+                  y={-8}
+                  rx={2}
                   fill={(d) => {
                     return colorScale(d.weather[0]) as string
                   }}
+                  stroke={STARDEW_COLORS.woodDark}
+                  strokeWidth={1.5}
+                  opacity={0.85}
                 />
               </Cartesian>
             </Chart>
+            {/* Weather legend */}
+            <g transform={`translate(${layout.root.width - 160}, ${layout.root.height - 100})`}>
+              <rect x={-8} y={-8} width={148} height={weatherDomain.length * 22 + 16} rx={4} fill={STARDEW_COLORS.parchment} stroke={STARDEW_COLORS.woodMedium} strokeWidth={1.5} opacity={0.95} />
+              {weatherDomain.map((w, i) => (
+                <g key={w} transform={`translate(0, ${i * 22})`}>
+                  <rect x={0} y={0} width={12} height={12} rx={2} fill={WEATHER_COLORS[w] || STARDEW_COLORS.woodMedium} stroke={STARDEW_COLORS.woodDark} strokeWidth={1} />
+                  <text x={18} y={10} fontSize={14} fill={STARDEW_COLORS.textDark} fontFamily="'VT323', monospace">{w}</text>
+                </g>
+              ))}
+            </g>
             {isDebug && <DebugLayout layout={layout} />}
           </svg>
         ) : (

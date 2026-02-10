@@ -1,7 +1,84 @@
-h1 {
+.wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 16px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 24px 32px;
+    background: linear-gradient(180deg, rgba(92,58,30,0.08) 0%, transparent 100%);
+    border-bottom: 3px solid var(--stardew-wood-medium);
+    position: relative;
+}
+
+.page-header h1 {
+    margin: 0 0 8px 0;
     text-align: center;
 }
 
+.page-subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 1.3em;
+    color: var(--stardew-wood-medium);
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.page-header::before,
+.page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    width: 8px;
+    height: 8px;
+    background: var(--stardew-gold);
+    border-radius: 50%;
+}
+
+.page-header::before {
+    left: 24px;
+}
+
+.page-header::after {
+    right: 24px;
+}
+
+/* Decorative divider between sections */
 .spacer {
-    height: 10vh;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.spacer::before {
+    content: '';
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 50%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--stardew-wood-light) 20%,
+        var(--stardew-wood-medium) 50%,
+        var(--stardew-wood-light) 80%,
+        transparent 100%
+    );
+}
+
+.spacer::after {
+    content: '';
+    position: relative;
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    background: var(--stardew-gold);
+    border: 2px solid var(--stardew-wood-dark);
+    transform: rotate(45deg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
